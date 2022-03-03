@@ -1,0 +1,2 @@
+# bw
+Bitwarden Zsh plugin
