@@ -34,6 +34,17 @@ alias bw-search="__bw_search '' $*"
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
 
+__bw_function_exists() {
+  declare -f -F $1 > /dev/null
+  return $?
+}
+
+# bw username hook - place in your .zshrc or initialize in any other way
+# should return the email address used to login to your bitwarden instance.
+# You a free to implement more complex solutions to gather your username.
+# See README for examples.
+# function bw-user { echo "email@domain.tld" }
+
 # perform a bitwarden login or unlock
 function bw-login() {
     local __BW_USER
@@ -51,7 +62,9 @@ function bw-login() {
             export BW_SESSION=$(bw unlock --raw)
         elif [[ "$(bw status | jq -r .status)" == "unauthenticated" ]]; then
             if [[ -z "$1" ]]; then
-                __BW_USER=$(bw-user);
+                if [[ $(__bw_function_exists bw-user) == 0 ]]; then
+                    __BW_USER=$(bw-user);
+                fi
             else
                 __BW_USER=$1;
             fi
