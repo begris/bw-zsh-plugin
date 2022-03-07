@@ -27,6 +27,9 @@ alias bwo="bw-search-organization $*"
 alias bws="bw-search $*"
 # alias bwl="bw-login"
 
+alias bw-search-personal="__bw_search null $*"
+alias bw-search-organization="__bw_search notnull $*"
+alias bw-search="__bw_search '' $*"
 
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
@@ -62,47 +65,6 @@ function bw-login() {
     fi
 }
 
-function bw-search-personal() { 
-  local searchterm=$1
-  local logins login
-
-  bwl
-
-  # Search for passwords using the search term
-  if [[ -n "$searchterm" ]]; then
-    logins=$(bw list items --organizationid null --search $searchterm)
-  else
-    logins=$(bw list items --organizationid null)
-  fi
-
-  login=$(bw-select "$logins")
-
-  if [[ -n $login ]]; then
-    bw-copy $(bw-asUsernamePassword <<< $login)
-  fi
-}
-
-function bw-search-organization { 
-  local searchterm=$1
-  local logins login
-
-  bwl
-
-  # Search for passwords using the search term
-  if [[ -n "$searchterm" ]]; then
-    logins=$(bw list items --organizationid notnull --search $searchterm)
-  else
-    logins=$(bw list items --organizationid notnull)
-  fi
-
-  login=$(bw-select "$logins")
-
-  if [[ -n $login ]]; then
-    bw-copy $(bw-asUsernamePassword <<< $login)
-  fi
-}
-
-
 # functions
 
 function bw-install-fzf() {
@@ -119,6 +81,36 @@ function bw-install-fzf() {
   local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/junegunn/fzf/releases/latest | grep -oE "[^/]+$")
   curl -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.zip" -o /tmp/fzf.zip && \
   unzip -ud /usr/local/bin /tmp/fzf.zip fzf.exe && rm /tmp/fzf.zip
+}
+
+function __bw_search() {
+  local org=$1
+  shift;
+  local searchterm=$*
+  local logins login
+
+  bwl
+
+  # Search for passwords using the search term
+  if [[ -n "$searchterm" ]]; then
+    if [[ -n "$org" ]]; then
+      logins=$(bw list items --organizationid $org --search $searchterm)
+    else
+      logins=$(bw list items --search $searchterm)
+    fi    
+  else
+    if [[ -n "$org" ]]; then
+      logins=$(bw list items --organizationid $org)
+    else
+      logins=$(bw list items)
+    fi
+  fi
+
+  login=$(bw-select "$logins")
+
+  if [[ -n $login ]]; then
+    bw-copy $(bw-asUsernamePassword <<< $login)
+  fi
 }
 
 function bw-select() {
@@ -138,24 +130,4 @@ function bw-select() {
     exit 0
   fi
   exit 1
-}
-
-function bw-search() {
-  local searchterm=$1
-  local logins login id
-
-  bwl
-
-  # Search for passwords using the search term
-  if [[ -n "$searchterm" ]]; then
-    logins=$(bw list items --search $searchterm)
-  else
-    logins=$(bw list items)
-  fi
-
-  login=$(bw-select "$logins")
-  
-  if [[ -n $login ]]; then
-    bw-copy $(bw-asUsernamePassword <<< $login)
-  fi
 }
