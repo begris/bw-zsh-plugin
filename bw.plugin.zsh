@@ -11,8 +11,6 @@ alias bw-asList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase )
 alias bw-asCredentialList="jq --raw-output '[.[] | { name: .name, username: .login.username, id: .id, folder: .folder, org: .organizationId}]' | bw-asList"
 alias bw-asPassword="jq --raw-output '.login.password | @sh'"
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
-# still needed?
-alias bw-list-personal="bw list items --organizationid null | bw-asCredentialList"
 alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
 alias bw-copy="gocred set --credential CLIP $*"
@@ -20,9 +18,6 @@ alias bw-paste="gocred get -u --credential CLIP"
 alias bw-paste-user="gocred get -us=false --credential CLIP"
 alias bw-paste-password="gocred get --credential CLIP"
 
-# still needed?
-alias bw-filter-private="echo '>-organizationid:*'"
-alias bw-filter-organization=">organizationid:*"
 
 alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)'"
 alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
@@ -32,8 +27,6 @@ alias bwo="bw-search-organization $*"
 alias bws="bw-search $*"
 # alias bwl="bw-login"
 
-# search functions
-#function bw-search() { bw list items --search "$1" | bw-asPassword }
 
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
