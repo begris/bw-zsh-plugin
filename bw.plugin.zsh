@@ -29,7 +29,7 @@ alias bws="bw-search $*"
 alias bw-search-personal="__bw_search null $*"
 alias bw-search-organization="__bw_search notnull $*"
 alias bw-search="__bw_search '' $*"
-#alias bwl="bw-login"
+alias bwl="bw-login $*"
 
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
