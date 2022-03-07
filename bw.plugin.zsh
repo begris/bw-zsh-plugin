@@ -14,12 +14,12 @@ alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcas
 alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
 
-alias bw-copy="gocred set --credential CLIP $*"
-alias bw-paste="gocred get -u --credential CLIP"
-alias bw-paste-user="gocred get -us=false --credential CLIP"
-alias bw-paste-password="gocred get --credential CLIP"
+alias bw-copy="gocred set --credential BW_CLIP $*"
+alias bw-paste="gocred get -u --credential BW_CLIP"
+alias bw-paste-user="gocred get -us=false --credential BW_CLIP"
+alias bw-paste-password="gocred get --credential BW_CLIP"
 # not yet implemented
-#alias bw-clip-reset="gocred delete --credential CLIP"
+#alias bw-clip-reset="gocred delete --credential BW_CLIP"
 
 alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
