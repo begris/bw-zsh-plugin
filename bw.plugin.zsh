@@ -62,7 +62,8 @@ function bw-login() {
             export BW_SESSION=$(bw unlock --raw)
         elif [[ "$(bw status | jq -r .status)" == "unauthenticated" ]]; then
             if [[ -z "$1" ]]; then
-                if [[ $(__bw_function_exists bw-user) == 0 ]]; then
+                __bw_function_exists bw-user
+                if [[ $? == 0 ]]; then
                     __BW_USER=$(bw-user);
                 fi
             else
