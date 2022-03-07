@@ -10,26 +10,26 @@
 alias bw-asList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)' | column -ts $'\t'"
 alias bw-asCredentialList="jq --raw-output '[.[] | { name: .name, username: .login.username, id: .id, folder: .folder, org: .organizationId}]' | bw-asList"
 alias bw-asPassword="jq --raw-output '.login.password | @sh'"
+alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)'"
+alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
-alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
 alias bw-copy="gocred set --credential CLIP $*"
 alias bw-paste="gocred get -u --credential CLIP"
 alias bw-paste-user="gocred get -us=false --credential CLIP"
 alias bw-paste-password="gocred get --credential CLIP"
+# not yet implemented
+#alias bw-clip-reset="gocred delete --credential CLIP"
 
-
-alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)'"
-alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
+alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
 alias bwp="bw-search-personal $*"
 alias bwo="bw-search-organization $*"
 alias bws="bw-search $*"
-# alias bwl="bw-login"
-
 alias bw-search-personal="__bw_search null $*"
 alias bw-search-organization="__bw_search notnull $*"
 alias bw-search="__bw_search '' $*"
+#alias bwl="bw-login"
 
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
