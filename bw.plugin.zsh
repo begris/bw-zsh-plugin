@@ -102,8 +102,34 @@ function bw-install-fzf() {
 function __bw_search() {
   local org=$1
   shift;
-  local searchterm=$*
+  local searchterm
+  local json
   local logins login
+
+  ARGS=$(getopt -o j -l "json" -n "$0" -- "$@")
+  if [ $? != 0 ] ; then
+    echo "Terminating..." >&2 ;
+    exit 1 ;
+  fi
+  # Note the quotes around `$ARGS': they are essential!
+  eval set -- "$ARGS"
+
+  # echo "$ARGS"
+  while true ; do
+    case "$1" in
+        -j|--json)
+            json="true";
+            shift;;
+        --)
+            shift ;
+            break ;;    # processed all options, parameters following
+        *)
+            echo "Internal error!" ;
+            exit 1 ;;
+    esac
+  done
+  eval set -- "$@"
+  searchterm="$@";
 
   bwl
 
@@ -126,6 +152,9 @@ function __bw_search() {
 
   if [[ -n $login ]]; then
     bw-copy $(bw-asUsernamePassword <<< $login)
+    if [[ -n $json ]]; then
+      echo $login
+    fi
   fi
 }
 
