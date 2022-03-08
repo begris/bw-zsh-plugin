@@ -52,7 +52,7 @@ function bw-login() {
     local __BW_USER
     local bwstatus=$(bw status | jq -r .status)
     if [[ "$bwstatus" == "unlocked" ]]; then
-        echo "Already unlocked.";
+        echo "Already unlocked."  >&2 ;
     elif [[ "$bwstatus" == "locked" || "$bwstatus" == "unauthenticated" ]]; then
         local _gocred=$(command -v gocred)
         if [[ ! -z "$_gocred" ]]; then
@@ -60,7 +60,7 @@ function bw-login() {
         fi
 
         if [[ "$(bw status | jq -r .status)"  == "locked" ]]; then
-            echo "Unlocking..."
+            echo "Unlocking..."  >&2 ;
             export BW_SESSION=$(bw unlock --raw)
         elif [[ "$(bw status | jq -r .status)" == "unauthenticated" ]]; then
             if [[ -z "$1" ]]; then
@@ -71,7 +71,7 @@ function bw-login() {
             else
                 __BW_USER=$1;
             fi
-            echo "Login..."
+            echo "Login..."  >&2 ;
             export BW_SESSION=$(bw login $__BW_USER --raw)
         fi
 
