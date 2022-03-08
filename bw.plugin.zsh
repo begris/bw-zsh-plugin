@@ -13,7 +13,7 @@ alias bw-asPassword="jq --raw-output '.login.password | @sh'"
 alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)'"
 alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
-function bw-getField() {echo $(jq --raw-output ".[0].$1 | @sh")}
+function bw-getField() {echo $(jq --raw-output ".$1 | @sh")}
 
 
 alias bw-copy="gocred set --credential BW_CLIP $*"
