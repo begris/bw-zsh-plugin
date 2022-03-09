@@ -1,5 +1,6 @@
 # bw
 _**Bitwarden Zsh plugin**_ - provides formatting options and easy acces to credentails stored in Bitwarden via the **Bitwarden CLI**.
+The plugin tries to retrieve a valid session before each action. So an explicit login is not nescessary beforehand.
 
 ## Requirements
 The following addtional tools are required to use the _Bitwarden Zsh plugin_:
@@ -20,7 +21,7 @@ gocred - https://github.com/begris/gocred/releases/latest/download
 | bws | alias for `bw-search` |  |
 | bwo | alias for `bw-search-organization` |  |
 | bwp | alias for `bw-search-personal` |  |
-| bw-login | performs a Bitwarden login. Checks the bitwarden status beforehand and performs an unlock or login accordingly, but only if necessary. Bitwarden username can be provided as argument. If not given tries to retrieve username from bw-user hook, which may be implemented in any kind. The session is exported as BW_SESSION environment variable, so available to other _CLI_ calls. If gocred is available the session key is also stored in the credential store and can be used by serval sessions (multiple terminal windows) on one system. | optional login name |
+| bw-login | performs a Bitwarden login. Checks the bitwarden status beforehand and performs an unlock or login accordingly, but only if necessary. Bitwarden username can be provided as argument. If not given tries to retrieve username from bw-user hook, which may be implemented in any way. The session is exported as BW_SESSION environment variable, so available to other _CLI_ calls. If gocred is available the session key is also stored in the credential store and can be used by serveral sessions (multiple terminal windows) on one system. | optional login name |
 | bwl | alias for `bw-login` |  |
 | bw-user | hook for Bitwarden username. Simplest possible implementation `function bw-user { echo "email@domain.tld" }` added to `.zshrc`. But anything should be possible, see examples for inspiration. |  |
 | bw-copy | copies [opt. username] and password to `BW_CLIP` using gocred |  |
@@ -31,6 +32,8 @@ gocred - https://github.com/begris/gocred/releases/latest/download
 | bw-orgId | returns the id of the first orgaization |  |
 | bw-orgMember | returns a list of the members of `bw-orgId` |  |
 | bw-orgCollections | returns a list of the collections of `bw-orgId` |  |
+| bw-getField | tbd |  |
+| bw-getCustomField | tbd |  |
 
 ## Formatting options
 
@@ -45,3 +48,60 @@ gocred - https://github.com/begris/gocred/releases/latest/download
 
 ## examples
 
+### simple selection
+1. Search for items matching `host1` - open entry selection if more than result
+2. get the value of the custom field `Hostname` - returns nothing if field does not exist
+3. pastes to user name of the selected item
+```shell
+echo "Do magic on host $(bws --json host1 | bw-getCustomField Hostname) with user $(bw-paste-user)"
+```
+
+### check if an item was actually selected
+1. Search for items matching `host1` - open entry selection if more than result
+2. check if an item was selected (return code `0`) or if the selection was aborted (return code `1`)
+3. get the value of the custom field `Hostname` - returns nothing if field does not exist
+4. perform action with Hostname field, e.g. connecting via ssh
+```shell
+json=$(bws --json host1); if [[ $? == 0 ]]; then h=`echo $json | bw-getCustomField Hostname`; echo echo "connect to $h"; else echo "ohh no - more lemmings"; fi
+```
+
+> gocred set --credential CLIP \
+> $(bw-select $(bw list items --organizationid notnull) \
+>  | bw-asUsernamePassword); gocred get -u --credential CLIP
+>
+>  bw-copy $(bw-select $(bw list items) | bw-asUsernamePassword)
+
+### bw-user hook
+The hook could be implemented in your `.zshrc` or any other resource file loaded before using the plugin commands itself.
+
+#### use shell variable
+```shell
+export USER_EMAIL="email@domain.tld"
+
+function bw-user() {
+	echo $USER_EMAIL
+}
+```
+
+#### use email address from git configuration
+```shell
+function bw-user() {
+	git config --global user.email
+}
+```
+
+#### get user from AD session
+```shell
+# get user principal from current windows session
+upn() {
+    if [[ -z "$UPN" ]]; then
+        cUPN=$(powershell 'Get-ADUser -Identity $env:USERNAME -Properties *| select-object -first 1 | foreach { $_.UserPrincipalName } | Write-Host -NoNewline');
+        export UPN=$cUPN;
+    fi
+    echo $UPN
+}
+
+function bw-user() {
+    upn
+}
+```
