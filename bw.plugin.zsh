@@ -35,7 +35,7 @@ function bw-getField() {echo $(jq --raw-output ".$1 | @sh")}
 function bw-getCustomField() {echo $(jq --raw-output ".fields[]? | select(.name == \"$1\") | select(.value != null) | .value | @sh")}
 
 
-alias bw-copy="gocred set --credential BW_CLIP $*"
+alias bw-copy="gocred set --credential BW_CLIP"
 alias bw-paste="gocred get -u --credential BW_CLIP"
 alias bw-paste-user="gocred get -us=false --credential BW_CLIP"
 alias bw-paste-password="gocred get --credential BW_CLIP"
