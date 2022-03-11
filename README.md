@@ -13,7 +13,7 @@ gocred - https://github.com/begris/gocred/releases/latest/download
 
 ## Commands
 
-| command | description | parameters
+| command | description | parameters |
 | --- | --- | --- |
 | bw-search | search credential and copy to secure store (`BW_CLIP`), if gocred is available. Displays the list of credentails found for further selection or copies if only one exact match was found. | argument as searchterm (bw list --search `searchterm`) |
 | bw-search-organization | see `bw-search`, but only searches for organizational credentials | argument as searchterm (`bw list --organizationid notnull --search <searchterm>`) |
