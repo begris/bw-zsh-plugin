@@ -124,12 +124,11 @@ function __bw_search() {
   local json
   local logins login
 
-  ARGS=$(getopt -o j -l "json" -n "$0" -- "$@")
+  local ARGS=$(getopt -o j -l "json" -n "$0" -- "$@")
   if [ $? != 0 ] ; then
     echo "Terminating..." >&2 ;
-    exit 1 ;
+    return 1 ;
   fi
-  # Note the quotes around `$ARGS': they are essential!
   eval set -- "$ARGS"
 
   # echo "$ARGS"
@@ -143,7 +142,7 @@ function __bw_search() {
             break ;;    # processed all options, parameters following
         *)
             echo "Internal error!" ;
-            exit 1 ;;
+            return 1 ;;
     esac
   done
   eval set -- "$@"
@@ -173,7 +172,9 @@ function __bw_search() {
     if [[ -n $json ]]; then
       echo $login
     fi
+    return 0
   fi
+  return 1
 }
 
 function bw-select() {
@@ -190,7 +191,7 @@ function bw-select() {
   if [[ -n $id ]]; then
     login="$(jq ".[] | select(.id == \"$id\")" <<< $logins)"
     echo $login
-    exit 0
+    return 0
   fi
-  exit 1
+  return 1
 }
