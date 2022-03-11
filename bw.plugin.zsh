@@ -166,6 +166,11 @@ function __bw_search() {
     fi
   fi
 
+  if [[ -z "$logins" || ! $(jq -r '(. | length)' <<< $logins) > 0  ]]; then
+    echo "no items found for serchterm $searchterm" >&2;
+    return 1
+  fi
+
   login=$(bw-select "$logins")
 
   if [[ -n $login ]]; then
