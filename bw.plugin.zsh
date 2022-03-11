@@ -169,7 +169,11 @@ function __bw_search() {
   login=$(bw-select "$logins")
 
   if [[ -n $login ]]; then
-    bw-copy $(bw-asUsernamePassword <<< $login)
+    # Filter uris to remove regex matches before parsing with jq.
+    # Under some circumstances the regex patterns of bitwarden lead
+    # to parsing errors in jq
+    local login_cred=$(sed -e '/\s*"uris"/,/],/d' <<< $login)
+    bw-copy $(bw-asUsernamePassword <<< $login_cred)
     if [[ -n $json ]]; then
       echo $login
     fi
