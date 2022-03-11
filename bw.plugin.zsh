@@ -44,13 +44,13 @@ alias bw-paste-password="gocred get --credential BW_CLIP"
 
 alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
-alias bwp="bw-search-personal $*"
-alias bwo="bw-search-organization $*"
-alias bws="bw-search $*"
-alias bw-search-personal="__bw_search null $*"
-alias bw-search-organization="__bw_search notnull $*"
-alias bw-search="__bw_search '' $*"
-alias bwl="bw-login $*"
+alias bwp="bw-search-personal"
+alias bwo="bw-search-organization"
+alias bws="bw-search"
+alias bw-search-personal="__bw_search null"
+alias bw-search-organization="__bw_search notnull"
+alias bw-search="__bw_search ''"
+alias bwl="bw-login"
 
 function bw-orgMember() { bwl; bw list --organizationid $(bw-orgId) org-members | bw-asList }
 function bw-orgCollections() { bwl; bw list org-collections --organizationid $(bw-orgId) | bw-asList }
