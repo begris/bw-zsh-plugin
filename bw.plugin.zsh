@@ -24,6 +24,18 @@
 ##
 ####
 
+if (( $+commands[bw] )); then
+  # If the completion file does not exist, generate it and then source it
+  # Otherwise, source it and regenerate in the background
+  if [[ ! -f "$ZSH_CACHE_DIR/completions/_bw" ]]; then
+    bw completion --shell zsh | tee "$ZSH_CACHE_DIR/completions/_bw" >/dev/null
+    source "$ZSH_CACHE_DIR/completions/_bw"
+  else
+    source "$ZSH_CACHE_DIR/completions/_bw"
+    bw completion --shell zsh | tee "$ZSH_CACHE_DIR/completions/_bw" >/dev/null &|
+  fi
+fi
+
 ## Aliases
 alias bw-asList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)' | column -ts $'\t'"
 alias bw-asCredentialList="jq --raw-output '[.[] | { name: .name, username: .login.username, id: .id, folder: .folder, org: .organizationId}]' | bw-asList"
