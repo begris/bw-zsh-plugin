@@ -102,7 +102,7 @@ function bw-login() {
 
 # functions
 
-function bw-install-fzf() {
+function bw-install-cli() {
   local installdir=$1
   if [[ -z "$installdir" ]]; then
     installdir=/usr/local/bin
@@ -112,10 +112,95 @@ function bw-install-fzf() {
   if [[ "$_os" =~ "Cygwin" ]]; then
     _os="windows"
     _machine="amd64"
+  elif [[ "$_os" =~ "Linux" ]]; then
+    _os="linux"
+    _machine="amd64"
+  elif [[ "$_os" =~ "Darwin" ]]; then
+    _os="macos"
+    _machine="amd64"
+  fi
+
+  local bw_url="https://vault.bitwarden.com/download/?app=cli&platform=$_os"
+  curl --progress-bar -L $bw_url -o /tmp/bw.zip && unzip -ud $installdir /tmp/bw.zip && rm /tmp/bw.zip
+  chmod +x $installdir/bw*
+}
+
+function bw-install-gocred() {
+  local installdir=$1
+  if [[ -z "$installdir" ]]; then
+      installdir=/usr/local/bin
+  fi
+  local _os=$(uname -o)
+  local _machine="amd64"
+  local _ext=""
+  local _archive="tar.gz"
+  if [[ "$_os" =~ "Cygwin" ]]; then
+    _os="windows"
+    _ext=".exe"
+    _archive="zip"
+  elif [[ "$_os" =~ "Linux" ]]; then
+    _os="linux"
+  fi
+  local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/begris/gocred/releases/latest | grep -oE "[^/]+$")
+  
+  if [[ "$_archive" == "zip" ]]; then
+    curl --progress-bar -L "https://github.com/begris/gocred/releases/latest/download/gocred-$_latest-${_os,,}-$_machine.$_archive" -o "/tmp/gocred.$_archive" &&\
+    unzip -ud $installdir "/tmp/gocred.$_archive" "gocred$_ext"; rm "/tmp/gocred.$_archive"
+  else
+    curl --progress-bar -L "https://github.com/begris/gocred/releases/latest/download/gocred-$_latest-${_os}-$_machine.$_archive" | tar -zx -C $installdir gocred$_ext
+  fi
+  
+  chmod +x "$installdir/gocred$_ext"
+}
+
+function bw-install-fzf() {
+  local installdir=$1
+  if [[ -z "$installdir" ]]; then
+      installdir=/usr/local/bin
+  fi
+  local _os=$(uname -o)
+  local _machine="amd64"
+  local _ext=""
+  local _archive="tar.gz"
+  if [[ "$_os" =~ "Cygwin" ]]; then
+    _os="windows"
+    _ext=".exe"
+    _archive="zip"
+  elif [[ "$_os" =~ "Linux" ]]; then
+    _os="linux"
   fi
   local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/junegunn/fzf/releases/latest | grep -oE "[^/]+$")
-  curl -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.zip" -o /tmp/fzf.zip && \
-  unzip -ud /usr/local/bin /tmp/fzf.zip fzf.exe && rm /tmp/fzf.zip
+  
+  if [[ "$_archive" == "zip" ]]; then
+    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.$_archive" -o "/tmp/fzf.$_archive" && \
+    unzip -ud $installdir "/tmp/fzf.$_archive" "fzf$_ext"; rm "/tmp/fzf.$_archive"
+  else
+    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.$_archive" | tar -zx -C $installdir fzf$_ext
+  fi
+  
+  chmod +x "$installdir/fzf$_ext"
+}
+
+function bw-install-jq() {
+  local installdir=$1
+  if [[ -z "$installdir" ]]; then
+    installdir=/usr/local/bin
+  fi
+  local _os=$(uname -o)
+  local _ext=""
+  if [[ "$_os" =~ "Cygwin" ]]; then
+    _os="win64"
+    _ext=".exe"
+  elif [[ "$_os" =~ "Linux" ]]; then
+    _os="linux64"
+  elif [[ "$_os" =~ "Darwin" ]]; then
+    _os="osx-amd64"
+  fi
+  local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/stedolan/jq/releases/latest | grep -oE "[^/]+$")
+  
+  curl --progress-bar -L "https://github.com/stedolan/jq/releases/latest/download/$_latest-${_os,,}$_ext" -o "$installdir/jq$_ext"
+  
+  chmod +x "$installdir/jq$_ext"
 }
 
 function __bw_search() {
