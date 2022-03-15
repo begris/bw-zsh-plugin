@@ -156,7 +156,7 @@ function bw-install-gocred() {
   local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/begris/gocred/releases/latest | grep -oE "[^/]+$")
   
   if [[ "$_archive" == "zip" ]]; then
-    curl --progress-bar -L "https://github.com/begris/gocred/releases/latest/download/gocred-$_latest-${_os,,}-$_machine.$_archive" -o "/tmp/gocred.$_archive" &&\
+    curl --progress-bar -L "https://github.com/begris/gocred/releases/latest/download/gocred-$_latest-${_os}-$_machine.$_archive" -o "/tmp/gocred.$_archive" &&\
     unzip -ud $installdir "/tmp/gocred.$_archive" "gocred$_ext"; rm "/tmp/gocred.$_archive"
   else
     curl --progress-bar -L "https://github.com/begris/gocred/releases/latest/download/gocred-$_latest-${_os}-$_machine.$_archive" | tar -zx -C $installdir gocred$_ext
@@ -210,7 +210,7 @@ function bw-install-jq() {
   fi
   local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/stedolan/jq/releases/latest | grep -oE "[^/]+$")
   
-  curl --progress-bar -L "https://github.com/stedolan/jq/releases/latest/download/$_latest-${_os,,}$_ext" -o "$installdir/jq$_ext"
+  curl --progress-bar -L "https://github.com/stedolan/jq/releases/latest/download/$_latest-${_os}$_ext" -o "$installdir/jq$_ext"
   
   chmod +x "$installdir/jq$_ext"
 }
