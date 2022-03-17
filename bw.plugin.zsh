@@ -45,6 +45,15 @@ alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
 function bw-getField() {echo $(jq --raw-output ".$1 | @sh")}
 function bw-getCustomField() {echo $(jq --raw-output ".fields[]? | select(.name == \"$1\") | select(.value != null) | .value | @sh")}
+function bw-clean-string-value() { 
+    local clean;
+    local pipe=""
+    for field in "$@"; do
+        clean="$clean $pipe sed -E '/\"$field\"/ s/([^\"]*)\"(,)*$/\"\2/'"
+        pipe="|"
+    done
+    eval "$clean"
+}
 
 
 alias bw-copy="gocred set --credential BW_CLIP"
