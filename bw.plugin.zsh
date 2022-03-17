@@ -286,7 +286,7 @@ function __bw_search() {
     local login_cred=$(bw-clean-string-value uri <<< $login)
     bw-copy $(bw-asUsernamePassword <<< $login_cred)
     if [[ -n $json ]]; then
-      echo $login
+      echo -E $login
     fi
     return 0
   fi
@@ -306,7 +306,7 @@ function bw-select() {
 
   if [[ -n $id ]]; then
     login="$(jq ".[] | select(.id == \"$id\")" <<< $logins)"
-    echo $login
+    echo -E $login
     return 0
   fi
   return 1
