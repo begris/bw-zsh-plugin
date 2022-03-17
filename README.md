@@ -55,7 +55,7 @@ As gocred is currently not provided by any package manager, you can install it u
 
 
 ## Formatting options
-> :warning: These formatting options are build to be used with the "plain" Bitwarden cli - these do _not_ work in conjunction with the aliases provided by the Zsh plugin. 
+> :warning: These formatting options are build to be used with the "plain" Bitwarden cli - these do _not_ work in conjunction with the aliases provided by the _Bitwarden Zsh plugin_. 
 
 | command               | description                                                                                                                               | example         |
 |-----------------------|-------------------------------------------------------------------------------------------------------------------------------------------|-----------------|
