@@ -61,7 +61,7 @@ alias bw-paste="gocred get -u --credential BW_CLIP"
 alias bw-paste-user="gocred get -us=false --credential BW_CLIP"
 alias bw-paste-password="gocred get --credential BW_CLIP"
 alias bw-clip-reset="gocred delete --credential BW_CLIP"
-alias bw-unescape="grep -Eo \"[^'].*[^'$]\""
+alias bw-unescape="grep -Ezo \"[^'].*[^'$]\""
 
 alias bw-orgId="bw list organizations | jq --raw-output '.[0].id'"
 
