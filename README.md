@@ -65,6 +65,7 @@ As gocred is currently not provided by any package manager, you can install it u
 | bw-asCredentials      | like `bw-asCredentialList` but with the fields `.name, .login.username, .login.uris[0].uri, .id`                                          |                 |
 | bw-asUsernamePassword | like `bw-asPassword` but returns two arguments `username` `password`                                                                      |                 |
 | bw-unescape           | removes the quotes of an entry                                                                                                            | `bw-paste-user \| bw-unescape` |
+| bw-clean-string-value           | replaces json strings with empty strings. In some cases strings are not correctly encoded by the Bitwarden CLI and prevent parsing by jq or other tools.                                                                                                            | `bws hostname \| bw-clean-string-value uri password` |
 
 ## examples
 
