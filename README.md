@@ -90,7 +90,7 @@ test3  user@site.com       31f117da-ac04-4c99-812e-ae5b00d87393
 test4  user                229bc07d-835e-4e42-a59b-ae5b00df50f2
 ```
 
-####  `bw-asCredentials` && `bw-asTsvList`
+#### `bw-asCredentials` && `bw-asTsvList`
 ```shell
 ❯ bw list items --search test --organizationid null | bw-asCredentials | bw-asTsvList
 NAME    USERNAME        URL     ID
@@ -124,12 +124,6 @@ echo "Do magic on host $(bws --json host1 | bw-getCustomField Hostname) with use
 ```shell
 json=$(bws --json host1); if [[ $? == 0 ]]; then h=`echo $json | bw-getCustomField Hostname`; echo echo "connect to $h"; else echo "ohh no - more lemmings"; fi
 ```
-
-> gocred set --credential CLIP \
-> $(bw-select $(bw list items --organizationid notnull) \
->  | bw-asUsernamePassword); gocred get -u --credential CLIP
->
->  bw-copy $(bw-select $(bw list items) | bw-asUsernamePassword)
 
 ### bw-user hook
 The hook should be implemented in your `.zshrc` or any other resource file loaded before using the plugin commands itself.
