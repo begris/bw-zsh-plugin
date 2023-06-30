@@ -54,7 +54,7 @@ function bw-clean-string-value() {
     done
     eval "$clean"
 }
-function bw-unescape() { grep -Ezo "[^']([^']$)*" }
+function bw-unescape() { sed -e "s/^'//;s/'$//" }
 
 
 alias bw-copy="gocred set --credential BW_CLIP"
