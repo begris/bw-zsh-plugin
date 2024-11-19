@@ -190,13 +190,14 @@ function bw-install-fzf() {
   elif [[ "$_os" =~ "Linux" ]]; then
     _os="linux"
   fi
-  local _latest=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/junegunn/fzf/releases/latest | grep -oE "[^/]+$")
+  local _latest_tag=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/junegunn/fzf/releases/latest | grep -oE "[^/]+$")
+  local _latest_version_only=$(grep -oE "[^v]+$" <<< $_latest_tag)
   
   if [[ "$_archive" == "zip" ]]; then
-    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.$_archive" -o "/tmp/fzf.$_archive" && \
+    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest_version_only-${_os}_$_machine.$_archive" -o "/tmp/fzf.$_archive" && \
     unzip -ud $installdir "/tmp/fzf.$_archive" "fzf$_ext"; rm "/tmp/fzf.$_archive"
-  else
-    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest-${_os}_$_machine.$_archive" | tar -zx -C $installdir fzf$_ext
+  else    
+    curl --progress-bar -L "https://github.com/junegunn/fzf/releases/latest/download/fzf-$_latest_version_only-${_os}_$_machine.$_archive" | tar -zx -C $installdir fzf$_ext
   fi
   
   chmod +x "$installdir/fzf$_ext"
