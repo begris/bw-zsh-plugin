@@ -264,7 +264,7 @@ function __bw_search() {
       if [[ "$org" != "null" ]]; then
         logins=$(bw list items --organizationid $org --search $searchterm)
       elif [[ "$org" == "null" ]]; then
-	      logins=$(bw list items --search $searchterm | jq 'map(. | select(.organizationId == null))')
+	    logins=$(bw list items --search $searchterm | jq 'map(. | select(.organizationId == null))')
       fi
     else
       logins=$(bw list items --search $searchterm)
