@@ -262,13 +262,25 @@ function __bw_search() {
   if [[ -n "$searchterm" ]]; then
     if [[ -n "$org" ]]; then
       logins=$(bw list items --organizationid $org --search $searchterm)
+      if [[ "$org" != "null" ]]; then
+        logins=$(bw list items --organizationid $org --search $searchterm)
+      elif [[ "$org" == "null" ]]; then
+        logins=$(bw list items --search $searchterm | jq 'map(. | select(.organizationId == null))')
+      fi
     else
       logins=$(bw list items --search $searchterm)
     fi    
+    fi
   else
     if [[ -n "$org" ]]; then
       logins=$(bw list items --organizationid $org)
     else
+      if [[ "$org" != "null" ]]; then
+        logins=$(bw list items --organizationid $org)
+      elif [[ "$org" == "null" ]]; then
+        logins=$(bw list items | jq 'map(. | select(.organizationId == null))')
+      fi
+    else 
       logins=$(bw list items)
     fi
   fi
