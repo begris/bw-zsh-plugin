@@ -378,7 +378,7 @@ function bw-select-ssh() {
 function bw-ssh-add() {
   local name="$@"
   local login=$(bw-ssh-list $name)
-  local SOURCE_PATH=$(dirname "$0")
+  local SOURCE_PATH="$(dirname -- "$0")"
 
   if [[ -n $login ]]; then
     local public=$(jq -r '.fields[] | select(.name == "ssh-public").value' <<< $login)
@@ -390,8 +390,6 @@ function bw-ssh-add() {
   fi
 
 }
-
-
 
 
 
