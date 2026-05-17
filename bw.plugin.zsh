@@ -384,14 +384,12 @@ function bw-ssh-add() {
     local public=$(jq -r '.fields[] | select(.name == "ssh-public").value' <<< $login)
     local private=$(jq -r '.fields[] | select(.name == "ssh-private-base64").value | @base64d' <<< $login)
     local private_passphrase=$(jq -r '.fields[] | select(.name == "ssh-private-passphrase").value' <<< $login)
-    eval DISPLAY=1 BW_SSH_PASSPHRASE=<(echo -e $private_passphrase) SSH_ASKPASS=$SOURCE_PATH/bw-ssh-keyprovider /usr/bin/ssh-add <(echo -e $private) < /dev/null
+    DISPLAY=1 BW_SSH_PASSPHRASE=<(echo -e $private_passphrase) SSH_ASKPASS=$SOURCE_PATH/bw-ssh-keyprovider /usr/bin/ssh-add -q <(echo -e $private) < /dev/null
   else
     echo "Key '${name}' not found." >&2;
     return 1
   fi
 }
-
-
 
 
 
