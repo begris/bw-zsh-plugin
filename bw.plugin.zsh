@@ -42,6 +42,7 @@ alias bw-asCredentialList="jq --raw-output '[.[] | { name: .name, username: .log
 alias bw-asPassword="jq --raw-output '.login.password | @sh'"
 alias bw-asTsvList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)'"
 alias bw-asCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, url: .login.uris[0].uri, id: .id}]'"
+alias bw-asSshCredentials="jq --raw-output '[.[] | { name: .name, username: .login.username, \"ssh-public\": (.fields[] | select(.name==\"ssh-public\").value | split(\" \") | .[0]+\" \"+.[1][0:10]+\"...\"+.[1][-10:]+\" \"+.[2] ), id: .id } ]'"
 alias bw-asUsernamePassword="jq --raw-output '.login.username, .login.password | @sh'"
 function bw-getField() {echo $(jq --raw-output ".$1 | @sh")}
 function bw-getCustomField() {echo $(jq --raw-output ".fields[]? | select(.name == \"$1\") | select(.value != null) | .value | @sh")}
@@ -320,3 +321,93 @@ function bw-select() {
   fi
   return 1
 }
+
+##################################################################################
+## ssh helper
+##################################################################################
+
+alias __SSH_FOLDER_ID="bw list folders | jq -r '.[] | select(.name == \".SSH\").id'"
+
+function bw-ssh-list() {
+  local searchterm="$@";
+  local logins login
+
+  bwl
+
+  # Search for ssh-keys using the search term
+  if [[ -n "$searchterm" ]]; then
+    logins=$(bw list items --folderid $(__SSH_FOLDER_ID) --search $searchterm)
+  else
+    logins=$(bw list items --folderid $(__SSH_FOLDER_ID))
+  fi
+
+  if [[ -z "$logins" || ! $(jq -r '(. | length)' <<< $logins) > 0  ]]; then
+    echo "no items found for serchterm $searchterm" >&2;
+    return 1
+  fi
+
+  login=$(bw-select-ssh "$logins")
+
+  if [[ -n $login ]]; then
+    echo -E $login
+    return 0
+  fi
+  return 1
+}
+
+function bw-select-ssh() {
+  local logins=$@
+  local login id
+
+  id=$(bw-asSshCredentials <<< $logins \
+    | bw-asTsvList \
+    | column -ts $'\t' \
+    | fzf --reverse --nth=1,2,3 --header-lines=1 --delimiter=" " --select-1 --exit-0 \
+    | grep -Eo '[^ ]+$'
+  )
+
+  if [[ -n $id ]]; then
+    login="$(jq ".[] | select(.id == \"$id\")" <<< $logins)"
+    echo -E $login
+    return 0
+  fi
+  return 1
+}
+
+
+function bw-ssh-add() {
+  local name=$1
+  local login=$(bw-ssh-list $name)
+  local SOURCE_PATH=$(dirname "$0")
+
+  if [[ -n $login ]]; then
+    local public=$(jq -r '.fields[] | select(.name == "ssh-public").value' <<< $login)
+    local private=$(jq -r '.fields[] | select(.name == "ssh-private-base64").value | @base64d' <<< $login)
+    local private_passphrase=$(jq -r '.fields[] | select(.name == "ssh-private-passphrase").value' <<< $login)
+    eval DISPLAY=1 BW_SSH_PASSPHRASE=<(echo -e $private_passphrase) SSH_ASKPASS=$SOURCE_PATH/bw-ssh-keyprovider /usr/bin/ssh-add <(echo -e $private) < /dev/null
+  else
+    echo $login
+  fi
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
