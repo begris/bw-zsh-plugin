@@ -386,14 +386,10 @@ function bw-ssh-add() {
     local private_passphrase=$(jq -r '.fields[] | select(.name == "ssh-private-passphrase").value' <<< $login)
     eval DISPLAY=1 BW_SSH_PASSPHRASE=<(echo -e $private_passphrase) SSH_ASKPASS=$SOURCE_PATH/bw-ssh-keyprovider /usr/bin/ssh-add <(echo -e $private) < /dev/null
   else
-    echo $login
+    echo "Key '${name}' not found." >&2;
+    return 1
   fi
-
 }
-
-
-
-
 
 
 
