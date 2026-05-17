@@ -376,7 +376,7 @@ function bw-select-ssh() {
 
 
 function bw-ssh-add() {
-  local name=$1
+  local name="$@"
   local login=$(bw-ssh-list $name)
   local SOURCE_PATH=$(dirname "$0")
 
@@ -390,8 +390,6 @@ function bw-ssh-add() {
   fi
 
 }
-
-
 
 
 
