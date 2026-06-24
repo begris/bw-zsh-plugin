@@ -36,6 +36,8 @@ if (( $+commands[bw] )); then
   fi
 fi
 
+export __BW_ZSH_PLUGIN_SOURCE_PATH="$(dirname -- "$0")"
+
 ## Aliases
 alias bw-asList="jq --raw-output '. | [.[]| with_entries( .key |= ascii_upcase ) ] | (.[0] |keys_unsorted | @tsv), (.[]|.|map(.) |@tsv)' | column -ts $'\t'"
 alias bw-asCredentialList="jq --raw-output '[.[] | { name: .name, username: .login.username, id: .id, folder: .folder, org: .organizationId}]' | bw-asList"
@@ -378,7 +380,7 @@ function bw-select-ssh() {
 function bw-ssh-add() {
   local name="$@"
   local login=$(bw-ssh-list $name)
-  local SOURCE_PATH="$(dirname -- "$0")"
+  local SOURCE_PATH=$__BW_ZSH_PLUGIN_SOURCE_PATH
 
   if [[ -n $login ]]; then
     local public=$(jq -r '.fields[] | select(.name == "ssh-public").value' <<< $login)
